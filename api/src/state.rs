@@ -2,12 +2,17 @@ use crate::config::Config;
 
 #[derive(Debug, Clone)]
 pub struct AppState {
-    #[allow(dead_code)]
-    pub config: Config,
+    config: Config,
 }
 
 impl AppState {
+    #[must_use]
     pub fn new(config: Config) -> Self {
         Self { config }
+    }
+
+    #[must_use]
+    pub fn config(&self) -> &Config {
+        &self.config
     }
 }

@@ -1,31 +1,23 @@
-mod app;
-mod config;
-mod state;
-mod error;
-mod domain;
-mod service;
-mod adapter;
-
-use crate::{
+use api::{
     adapter::logging::init,
-    config::env,
+    app,
+    config::Config,
     state::AppState,
 };
 
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
+async fn main() -> Result<(), api::error::AppError> {
     let _ = dotenvy::dotenv();
 
-    let config = env::load();
+    let config = Config::from_env()?;
 
     init::init(&config.rust_log);
 
     tracing::info!("starting server");
 
-    let state = AppState::new(config.clone());
+    let addr = config.listen_addr()?;
+    let state = AppState::new(config);
     let app = app::create_app(state);
-
-    let addr = format!("{}:{}", config.app_host, config.app_port);
 
     let listener = tokio::net::TcpListener::bind(addr).await?;
 
