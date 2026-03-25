@@ -6,11 +6,9 @@ use api::{
 };
 use sqlx::postgres::PgPoolOptions;
 
-const DB_MAX_CONNECTIONS: u32 = 5;
-
 #[tokio::main]
 async fn main() -> Result<(), api::error::AppError> {
-    let _ = dotenvy::dotenv();
+    dotenvy::dotenv().ok();
 
     let config = Config::from_env()?;
 
@@ -19,7 +17,7 @@ async fn main() -> Result<(), api::error::AppError> {
     tracing::info!("connecting to database");
 
     let db = PgPoolOptions::new()
-        .max_connections(DB_MAX_CONNECTIONS)
+        .max_connections(config.db_max_connections)
         .connect(&config.database_url)
         .await
         .map_err(|err| {

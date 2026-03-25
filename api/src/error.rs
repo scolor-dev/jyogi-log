@@ -33,6 +33,10 @@ pub enum ConfigError {
     MissingEnvVar {
         name: &'static str,
     },
+    InvalidDbMaxConnections {
+        value: String,
+        source: std::num::ParseIntError,
+    },
 }
 
 impl fmt::Display for ConfigError {
@@ -47,6 +51,9 @@ impl fmt::Display for ConfigError {
             Self::MissingEnvVar { name } => {
                 write!(f, "required environment variable `{name}` is not set")
             }
+            Self::InvalidDbMaxConnections { value, .. } => {
+                write!(f, "DB_MAX_CONNECTIONS must be a valid u32, got `{value}`")
+            }
         }
     }
 }
@@ -54,7 +61,8 @@ impl fmt::Display for ConfigError {
 impl StdError for ConfigError {
     fn source(&self) -> Option<&(dyn StdError + 'static)> {
         match self {
-            Self::InvalidPort { source, .. } => Some(source),
+            Self::InvalidPort { source, .. }
+            | Self::InvalidDbMaxConnections { source, .. } => Some(source),
             Self::InvalidListenAddress { source, .. } => Some(source),
             Self::MissingEnvVar { .. } => None,
         }

@@ -10,6 +10,7 @@ pub struct Config {
     pub app_port: u16,
     pub rust_log: String,
     pub database_url: String,
+    pub db_max_connections: u32,
 }
 
 impl fmt::Debug for Config {
@@ -19,14 +20,21 @@ impl fmt::Debug for Config {
             .field("app_port", &self.app_port)
             .field("rust_log", &self.rust_log)
             .field("database_url", &"[redacted]")
+            .field("db_max_connections", &self.db_max_connections)
             .finish()
     }
 }
 
 impl Config {
     #[must_use]
-    pub fn new(app_host: String, app_port: u16, rust_log: String, database_url: String) -> Self {
-        Self { app_host, app_port, rust_log, database_url }
+    pub fn new(
+        app_host: String,
+        app_port: u16,
+        rust_log: String,
+        database_url: String,
+        db_max_connections: u32,
+    ) -> Self {
+        Self { app_host, app_port, rust_log, database_url, db_max_connections }
     }
 
     /// プロセス環境変数からアプリケーション設定を読み込みます。
