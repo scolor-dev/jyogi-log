@@ -1,14 +1,19 @@
 import { Link, useNavigate } from 'react-router-dom'
+import { useAuth } from '../hooks/useAuth'
 
 export default function Login() {
   const navigate = useNavigate()
+  const { login } = useAuth()
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="bg-white p-8 rounded-lg shadow w-full max-w-sm">
         <h1 className="text-2xl font-bold mb-6 text-center">ログイン</h1>
 
-        <form onSubmit={(e) => { e.preventDefault(); navigate('/') }} className="flex flex-col gap-4">
+        <form
+          onSubmit={(e) => { e.preventDefault(); login(); navigate('/dashboard') }}
+          className="flex flex-col gap-4"
+        >
           <div>
             <label className="block text-sm font-medium mb-1">ユーザー名</label>
             <input
