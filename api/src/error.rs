@@ -30,6 +30,13 @@ pub enum ConfigError {
         port: u16,
         source: AddrParseError,
     },
+    MissingEnvVar {
+        name: &'static str,
+    },
+    InvalidDbMaxConnections {
+        value: String,
+        source: std::num::ParseIntError,
+    },
 }
 
 impl fmt::Display for ConfigError {
@@ -41,6 +48,12 @@ impl fmt::Display for ConfigError {
             Self::InvalidListenAddress { host, port, .. } => {
                 write!(f, "invalid listen address `{host}:{port}`")
             }
+            Self::MissingEnvVar { name } => {
+                write!(f, "required environment variable `{name}` is not set")
+            }
+            Self::InvalidDbMaxConnections { value, .. } => {
+                write!(f, "DB_MAX_CONNECTIONS must be a valid u32, got `{value}`")
+            }
         }
     }
 }
@@ -48,8 +61,10 @@ impl fmt::Display for ConfigError {
 impl StdError for ConfigError {
     fn source(&self) -> Option<&(dyn StdError + 'static)> {
         match self {
-            Self::InvalidPort { source, .. } => Some(source),
+            Self::InvalidPort { source, .. }
+            | Self::InvalidDbMaxConnections { source, .. } => Some(source),
             Self::InvalidListenAddress { source, .. } => Some(source),
+            Self::MissingEnvVar { .. } => None,
         }
     }
 }
@@ -58,6 +73,7 @@ impl StdError for ConfigError {
 pub enum AppError {
     Config(ConfigError),
     Io(std::io::Error),
+    Database(sqlx::Error),
 }
 
 impl fmt::Display for AppError {
@@ -65,6 +81,7 @@ impl fmt::Display for AppError {
         match self {
             Self::Config(error) => write!(f, "{error}"),
             Self::Io(error) => write!(f, "{error}"),
+            Self::Database(error) => write!(f, "{error}"),
         }
     }
 }
@@ -74,6 +91,7 @@ impl StdError for AppError {
         match self {
             Self::Config(error) => Some(error),
             Self::Io(error) => Some(error),
+            Self::Database(error) => Some(error),
         }
     }
 }
@@ -87,5 +105,11 @@ impl From<ConfigError> for AppError {
 impl From<std::io::Error> for AppError {
     fn from(value: std::io::Error) -> Self {
         Self::Io(value)
+    }
+}
+
+impl From<sqlx::Error> for AppError {
+    fn from(value: sqlx::Error) -> Self {
+        Self::Database(value)
     }
 }

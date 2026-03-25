@@ -1,17 +1,42 @@
 pub mod env;
 
-use std::net::SocketAddr;
+use std::{fmt, net::SocketAddr};
 
 use crate::error::ConfigError;
 
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub struct Config {
     pub app_host: String,
     pub app_port: u16,
     pub rust_log: String,
+    pub database_url: String,
+    pub db_max_connections: u32,
+}
+
+impl fmt::Debug for Config {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("Config")
+            .field("app_host", &self.app_host)
+            .field("app_port", &self.app_port)
+            .field("rust_log", &self.rust_log)
+            .field("database_url", &"[redacted]")
+            .field("db_max_connections", &self.db_max_connections)
+            .finish()
+    }
 }
 
 impl Config {
+    #[must_use]
+    pub fn new(
+        app_host: String,
+        app_port: u16,
+        rust_log: String,
+        database_url: String,
+        db_max_connections: u32,
+    ) -> Self {
+        Self { app_host, app_port, rust_log, database_url, db_max_connections }
+    }
+
     /// プロセス環境変数からアプリケーション設定を読み込みます。
     ///
     /// # Errors
