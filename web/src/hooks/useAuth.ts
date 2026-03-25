@@ -1,6 +1,9 @@
 import { useContext } from 'react'
 import { AuthContext } from '../stores/authContext'
 
+// User 型を再エクスポートする（各ページから useAuth だけ import すれば使えるように）
+export type { User } from '../stores/authContext'
+
 // AuthContext を取得する便利フック
 // AuthProvider の外で呼ばれた場合はエラーを出す
 export function useAuth() {
