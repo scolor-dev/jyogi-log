@@ -1,8 +1,10 @@
 import { Link, useNavigate } from 'react-router-dom'
+import { useAuth } from '../hooks/useAuth'
 import { FormField, Input, PasswordInput, SubmitButton } from '../components/form'
 
 export default function Login() {
   const navigate = useNavigate()
+  const { login } = useAuth()
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -10,7 +12,10 @@ export default function Login() {
         <h1 className="text-2xl font-bold mb-6 text-center">ログイン</h1>
 
         {/* TODO: 認証ロジック実装時に入力値をフォームに接続する */}
-        <form onSubmit={(e) => { e.preventDefault(); navigate('/') }} className="flex flex-col gap-4">
+        <form
+          onSubmit={(e) => { e.preventDefault(); login(); navigate('/dashboard') }}
+          className="flex flex-col gap-4"
+        >
           <FormField label="ユーザー名" htmlFor="username">
             <Input id="username" type="text" placeholder="username" />
           </FormField>
