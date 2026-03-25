@@ -2,13 +2,14 @@ import type { ReactNode } from 'react'
 
 type FormFieldProps = {
   label: string
+  htmlFor: string
   children: ReactNode
 }
 
-export default function FormField({ label, children }: FormFieldProps) {
+export default function FormField({ label, htmlFor, children }: FormFieldProps) {
   return (
     <div>
-      <label className="block text-sm font-medium mb-1">{label}</label>
+      <label htmlFor={htmlFor} className="block text-sm font-medium mb-1">{label}</label>
       {children}
     </div>
   )

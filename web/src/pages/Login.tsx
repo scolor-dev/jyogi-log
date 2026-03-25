@@ -1,8 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom'
-import FormField from '../components/form/FormField'
-import Input from '../components/form/Input'
-import PasswordInput from '../components/form/PasswordInput'
-import SubmitButton from '../components/form/SubmitButton'
+import { FormField, Input, PasswordInput, SubmitButton } from '../components/form'
 
 export default function Login() {
   const navigate = useNavigate()
@@ -13,12 +10,12 @@ export default function Login() {
         <h1 className="text-2xl font-bold mb-6 text-center">ログイン</h1>
 
         <form onSubmit={(e) => { e.preventDefault(); navigate('/') }} className="flex flex-col gap-4">
-          <FormField label="ユーザー名">
-            <Input type="text" placeholder="username" />
+          <FormField label="ユーザー名" htmlFor="username">
+            <Input id="username" type="text" placeholder="username" />
           </FormField>
 
-          <FormField label="パスワード">
-            <PasswordInput />
+          <FormField label="パスワード" htmlFor="password">
+            <PasswordInput id="password" />
           </FormField>
 
           <SubmitButton>ログイン</SubmitButton>
