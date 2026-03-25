@@ -3,15 +3,20 @@ use axum::http::{Request, StatusCode};
 use api::{app, config::Config, state::AppState};
 use tower::util::ServiceExt;
 
-#[tokio::test]
-async fn health_returns_200() -> Result<(), Box<dyn std::error::Error>> {
+fn test_state() -> Result<AppState, Box<dyn std::error::Error>> {
     let config = Config {
         app_host: "127.0.0.1".to_string(),
         app_port: 3000,
         rust_log: "info".to_string(),
+        database_url: "postgres://localhost/test".to_string(),
     };
+    let db = sqlx::PgPool::connect_lazy(&config.database_url)?;
+    Ok(AppState::new(config, db))
+}
 
-    let state = AppState::new(config);
+#[tokio::test]
+async fn health_returns_200() -> Result<(), Box<dyn std::error::Error>> {
+    let state = test_state()?;
     let app = app::create_app(state);
 
     let response = app
@@ -30,13 +35,7 @@ async fn health_returns_200() -> Result<(), Box<dyn std::error::Error>> {
 
 #[tokio::test]
 async fn legacy_health_returns_404() -> Result<(), Box<dyn std::error::Error>> {
-    let config = Config {
-        app_host: "127.0.0.1".to_string(),
-        app_port: 3000,
-        rust_log: "info".to_string(),
-    };
-
-    let state = AppState::new(config);
+    let state = test_state()?;
     let app = app::create_app(state);
 
     let response = app

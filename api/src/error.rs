@@ -65,6 +65,7 @@ impl StdError for ConfigError {
 pub enum AppError {
     Config(ConfigError),
     Io(std::io::Error),
+    Database(sqlx::Error),
 }
 
 impl fmt::Display for AppError {
@@ -72,6 +73,7 @@ impl fmt::Display for AppError {
         match self {
             Self::Config(error) => write!(f, "{error}"),
             Self::Io(error) => write!(f, "{error}"),
+            Self::Database(error) => write!(f, "{error}"),
         }
     }
 }
@@ -81,6 +83,7 @@ impl StdError for AppError {
         match self {
             Self::Config(error) => Some(error),
             Self::Io(error) => Some(error),
+            Self::Database(error) => Some(error),
         }
     }
 }
@@ -94,5 +97,11 @@ impl From<ConfigError> for AppError {
 impl From<std::io::Error> for AppError {
     fn from(value: std::io::Error) -> Self {
         Self::Io(value)
+    }
+}
+
+impl From<sqlx::Error> for AppError {
+    fn from(value: sqlx::Error) -> Self {
+        Self::Database(value)
     }
 }
