@@ -128,10 +128,12 @@ function EditRow({
   value: string
   onChange: (v: string) => void
 }) {
+  const id = `edit-${label}`
   return (
     <div className="flex items-center gap-4">
-      <label className="w-32 text-gray-500 text-sm shrink-0">{label}</label>
+      <label htmlFor={id} className="w-32 text-gray-500 text-sm shrink-0">{label}</label>
       <input
+        id={id}
         type="text"
         value={value}
         onChange={(e) => onChange(e.target.value)}

@@ -28,7 +28,10 @@ export const AuthContext = createContext<AuthContextType | null>(null)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(
-    () => (localStorage.getItem('token') ? MOCK_USER : null)
+    () => {
+      // TODO: API実装時は GET /api/users/me でユーザー情報を取得する（現在はMOCKで代替）
+      return localStorage.getItem('token') ? MOCK_USER : null
+    }
   )
 
   // user が存在するかどうかでログイン状態を判定する（別 state にすると不整合が起きうる）
@@ -46,6 +49,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // プロフィールを更新する（保存ボタンを押したときに呼ぶ）
   const updateUser = (newUser: User) => {
+    // TODO: API実装時は PATCH /api/users/me を呼び出す
+    // 現在はstateのみ更新のためリロード時にリセットされる
     setUser(newUser)
   }
 
