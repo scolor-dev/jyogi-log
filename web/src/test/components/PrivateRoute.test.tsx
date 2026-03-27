@@ -5,21 +5,21 @@ import { AuthContext, type User } from '../../stores/authContext'
 import PrivateRoute from '../../components/PrivateRoute'
 
 const MOCK_USER: User = {
-  displayName: 'テストユーザー',
-  bio: 'テスト用の自己紹介文',
-  department: '情報工学科',
-  grade: '3年',
+  uuid: 'test-uuid-1234',
+  identifier: 'test@example.com',
+  display_name: 'テストユーザー',
 }
 
-function renderPrivateRoute(isLoggedIn: boolean) {
+function renderPrivateRoute(isLoggedIn: boolean, isInitializing = false) {
   return render(
     <AuthContext.Provider
       value={{
         isLoggedIn,
+        isInitializing,
         user: isLoggedIn ? MOCK_USER : null,
         login: vi.fn(),
         logout: vi.fn(),
-        updateUser: vi.fn(),
+        getAccessToken: vi.fn().mockReturnValue(null),
       }}
     >
       <MemoryRouter initialEntries={['/protected']}>
@@ -47,5 +47,16 @@ describe('PrivateRoute', () => {
     renderPrivateRoute(true)
     expect(screen.getByText('保護されたコンテンツ')).toBeInTheDocument()
     expect(screen.queryByText('ログインページ')).toBeNull()
+  })
+
+  // AC-14: isInitializing が true のとき何もレンダリングしない
+  it('AC-14: isInitializing が true のとき何もレンダリングしない', () => {
+    const { container } = renderPrivateRoute(false, true)
+    // isInitializing が true のとき PrivateRoute は null を返す
+    // MemoryRouter と Routes の wrapper 要素のみ残り、保護コンテンツもログインページも表示されない
+    expect(screen.queryByText('保護されたコンテンツ')).toBeNull()
+    expect(screen.queryByText('ログインページ')).toBeNull()
+    // container 内に意味のある子要素がないことを確認
+    expect(container.querySelector('div')).toBeNull()
   })
 })
