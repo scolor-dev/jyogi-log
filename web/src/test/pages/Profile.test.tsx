@@ -36,9 +36,10 @@ describe('Profile', () => {
 
   describe('表示モード（isEditing = false）', () => {
     // AC-18: 表示モードで user.displayName が DOM に存在する
+    // アバター部分と ProfileRow の2箇所に表示される
     it('AC-18: user.displayName が DOM に表示される', () => {
       renderWithAuth(MOCK_USER)
-      expect(screen.getAllByText('テストユーザー').length).toBeGreaterThan(0)
+      expect(screen.getAllByText('テストユーザー')).toHaveLength(2)
     })
 
     // AC-19: 表示モードで user.bio が DOM に存在する
@@ -48,10 +49,12 @@ describe('Profile', () => {
     })
 
     // AC-20: 表示モードで user.department と user.grade が DOM に存在する
+    // アバター部分は '情報工学科 / 3年' の合成テキストのため完全一致しない
+    // ProfileRow に1件ずつ表示される
     it('AC-20: user.department と user.grade が DOM に表示される', () => {
       renderWithAuth(MOCK_USER)
-      expect(screen.getAllByText('情報工学科').length).toBeGreaterThan(0)
-      expect(screen.getAllByText('3年').length).toBeGreaterThan(0)
+      expect(screen.getByText('情報工学科')).toBeInTheDocument()
+      expect(screen.getByText('3年')).toBeInTheDocument()
     })
 
     // AC-21: 表示モードで input 要素が DOM に存在しない
@@ -66,7 +69,7 @@ describe('Profile', () => {
     it('AC-22: input 要素が表示される', async () => {
       renderWithAuth(MOCK_USER)
       await userEvent.click(screen.getByRole('button', { name: '編集' }))
-      expect(screen.getAllByRole('textbox').length).toBeGreaterThan(0)
+      expect(screen.getAllByRole('textbox')).toHaveLength(4)
     })
 
     // AC-23: 「編集」ボタンクリック後 → 「編集」ボタンが消える
@@ -85,6 +88,7 @@ describe('Profile', () => {
       await userEvent.click(screen.getByRole('button', { name: '編集' }))
       await userEvent.click(screen.getByRole('button', { name: '保存' }))
       expect(updateUser).toHaveBeenCalledTimes(1)
+      expect(updateUser).toHaveBeenCalledWith(MOCK_USER)
     })
 
     // AC-25: 「保存」ボタンクリック後 → 表示モードに戻る（「編集」ボタンが再表示）
