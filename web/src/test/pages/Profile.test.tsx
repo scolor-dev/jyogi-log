@@ -36,7 +36,8 @@ describe('Profile', () => {
 
   describe('表示モード（isEditing = false）', () => {
     // AC-18: 表示モードで user.displayName が DOM に存在する
-    // アバター部分と ProfileRow の2箇所に表示される
+    // アバター見出し（<p class="text-xl">）と ProfileRow の値列（<span>）の2箇所に意図的に表示される
+    // toHaveLength(2) は「どちらか一方だけになる回帰」を検知するための固定値
     it('AC-18: user.displayName が DOM に表示される', () => {
       renderWithAuth(MOCK_USER)
       expect(screen.getAllByText('テストユーザー')).toHaveLength(2)
@@ -81,7 +82,7 @@ describe('Profile', () => {
   })
 
   describe('「保存」ボタンクリック後', () => {
-    // AC-24: 「保存」ボタンクリック後 → updateUser が1回呼ばれる
+    // AC-24: 「保存」ボタンクリック後 → updateUser が1回呼ばれる（変更なし保存）
     it('AC-24: updateUser が1回呼ばれる', async () => {
       const updateUser = vi.fn()
       renderWithAuth(MOCK_USER, updateUser)
@@ -89,6 +90,18 @@ describe('Profile', () => {
       await userEvent.click(screen.getByRole('button', { name: '保存' }))
       expect(updateUser).toHaveBeenCalledTimes(1)
       expect(updateUser).toHaveBeenCalledWith(MOCK_USER)
+    })
+
+    // AC-24b: 入力変更後に保存すると変更内容が updateUser に渡される（ハッピーパス）
+    it('AC-24b: 入力変更後の保存で変更内容が updateUser に渡される', async () => {
+      const updateUser = vi.fn()
+      renderWithAuth(MOCK_USER, updateUser)
+      await userEvent.click(screen.getByRole('button', { name: '編集' }))
+      const displayNameInput = screen.getByLabelText('表示名')
+      await userEvent.clear(displayNameInput)
+      await userEvent.type(displayNameInput, '変更後の名前')
+      await userEvent.click(screen.getByRole('button', { name: '保存' }))
+      expect(updateUser).toHaveBeenCalledWith({ ...MOCK_USER, displayName: '変更後の名前' })
     })
 
     // AC-25: 「保存」ボタンクリック後 → 表示モードに戻る（「編集」ボタンが再表示）
