@@ -7,6 +7,7 @@ import Login from './pages/Login'
 import Signup from './pages/Signup'
 import Dashboard from './pages/Dashboard'
 import Profile from './pages/Profile'
+import PrivateRoute from './components/PrivateRoute'
 
 export default function App() {
   return (
@@ -18,8 +19,12 @@ export default function App() {
         <Route path="info" element={<Info />} />
         <Route path="login" element={<Login />} />
         <Route path="signup" element={<Signup />} />
-        <Route path="dashboard" element={<Dashboard />} />
-        <Route path="profile" element={<Profile />} />
+
+        {/* 認証が必要なルート */}
+        <Route element={<PrivateRoute />}>
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="profile" element={<Profile />} />
+        </Route>
       </Route>
     </Routes>
   )

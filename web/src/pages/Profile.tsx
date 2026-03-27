@@ -1,18 +1,15 @@
 import { useState } from 'react'
-import { Navigate } from 'react-router-dom'
 import { useAuth, type User } from '../hooks/useAuth'
 
 export default function Profile() {
-  const { isLoggedIn, user, updateUser } = useAuth()
+  const { user, updateUser } = useAuth()
 
   // フックはすべてここで呼ぶ（条件分岐より前に置くのが React のルール）
   const [isEditing, setIsEditing] = useState(false)
   const [editData, setEditData] = useState<User>({ displayName: '', bio: '', department: '', grade: '' })
 
-  // 未ログインならログインページへ
-  if (!isLoggedIn || !user) {
-    return <Navigate to="/login" />
-  }
+  // PrivateRoute でガード済みだが TypeScript の型保証のため
+  if (!user) return null
 
   const handleEdit = () => {
     setEditData(user) // 最新データを編集フォームにセット
