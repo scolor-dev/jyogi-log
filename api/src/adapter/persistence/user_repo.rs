@@ -7,7 +7,7 @@ use crate::domain::models::AuthCredential;
 ///
 /// # Errors
 /// - DB エラー時に `sqlx::Error` を返す
-/// - identifier 重複時は PostgreSQL error code 23505 が返る
+/// - identifier 重複時は `PostgreSQL` error code 23505 が返る
 pub async fn create_user_txn(
     pool: &PgPool,
     identifier: &str,

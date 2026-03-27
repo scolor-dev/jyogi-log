@@ -2,7 +2,6 @@ use hex::encode as hex_encode;
 use rand::RngCore;
 use sha2::{Digest, Sha256};
 use sqlx::PgPool;
-use uuid::Uuid;
 
 use crate::{
     adapter::persistence::{session_repo, user_repo},
@@ -50,25 +49,43 @@ pub async fn signup(pool: &PgPool, req: &SignupRequest) -> Result<SignupResponse
     Ok(SignupResponse { user_id: user_uuid })
 }
 
+/// identifier が存在しない場合もダミーハッシュで bcrypt を実行しタイミング差を排除する
+const DUMMY_HASH: &str = "$2b$12$GhvMmNVjRW29ulnudl.LDuINE2ZZm5T9VDJ/b5VLg.Ggt.kp7/LDi";
+
 /// ログイン処理。成功時に生セッショントークンを返す
 ///
 /// # Errors
 /// - identifier / password 不一致: `ApiError::Unauthorized`
 /// - DB エラー時: `ApiError::InternalServerError`
 pub async fn login(pool: &PgPool, req: &LoginRequest) -> Result<String, ApiError> {
-    let credential = user_repo::find_credential_by_identifier(pool, &req.identifier)
-        .await?
-        .ok_or(ApiError::Unauthorized)?;
+    let credential = user_repo::find_credential_by_identifier(pool, &req.identifier).await?;
 
-    let valid = bcrypt::verify(&req.password, &credential.secret_hash)?;
-    if !valid {
+    let (secret_hash, user_found) =
+        credential.as_ref().map_or((DUMMY_HASH, false), |c| (c.secret_hash.as_str(), true));
+
+    let valid = match bcrypt::verify(&req.password, secret_hash) {
+        Ok(v) => v,
+        Err(e) => {
+            if user_found {
+                return Err(ApiError::from(e));
+            }
+            false
+        }
+    };
+
+    if !user_found || !valid {
+        tracing::warn!(identifier = %req.identifier, "login failed");
         return Err(ApiError::Unauthorized);
     }
 
     let raw_token = generate_token();
     let token_hash = hash_token(&raw_token);
 
-    session_repo::create(pool, credential.user_id, &token_hash).await?;
+    // user_found が true = credential は Some であることが保証されている
+    let user_id = credential
+        .ok_or(ApiError::Unauthorized)?
+        .user_id;
+    session_repo::create(pool, user_id, &token_hash).await?;
 
     Ok(raw_token)
 }
@@ -123,8 +140,3 @@ pub async fn me(pool: &PgPool, raw_token: &str) -> Result<MeResponse, ApiError> 
     })
 }
 
-/// セッショントークンの UUID を返す（テスト用に公開）
-#[must_use]
-pub fn new_session_uuid() -> Uuid {
-    Uuid::new_v4()
-}

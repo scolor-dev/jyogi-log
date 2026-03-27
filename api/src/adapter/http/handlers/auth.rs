@@ -40,6 +40,7 @@ pub async fn login(
         .secure(true)
         .same_site(SameSite::Strict)
         .path("/")
+        .max_age(time::Duration::days(30))
         .build();
 
     Ok((jar.add(cookie), StatusCode::OK))

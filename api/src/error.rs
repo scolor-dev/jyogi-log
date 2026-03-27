@@ -14,23 +14,22 @@ pub enum ApiError {
 
 impl IntoResponse for ApiError {
     fn into_response(self) -> Response {
-        let status = match self {
-            Self::InternalServerError => StatusCode::INTERNAL_SERVER_ERROR,
-            Self::Unauthorized => StatusCode::UNAUTHORIZED,
-            Self::Conflict => StatusCode::CONFLICT,
-            Self::BadRequest => StatusCode::BAD_REQUEST,
+        let (status, error) = match self {
+            Self::InternalServerError => (StatusCode::INTERNAL_SERVER_ERROR, "internal_server_error"),
+            Self::Unauthorized        => (StatusCode::UNAUTHORIZED, "unauthorized"),
+            Self::Conflict            => (StatusCode::CONFLICT, "conflict"),
+            Self::BadRequest          => (StatusCode::BAD_REQUEST, "bad_request"),
         };
-
-        status.into_response()
+        (status, axum::Json(serde_json::json!({ "error": error }))).into_response()
     }
 }
 
 impl From<sqlx::Error> for ApiError {
     fn from(e: sqlx::Error) -> Self {
-        if let sqlx::Error::Database(ref db_err) = e {
-            if db_err.code().as_deref() == Some("23505") {
-                return Self::Conflict;
-            }
+        if let sqlx::Error::Database(ref db_err) = e
+            && db_err.code().as_deref() == Some("23505")
+        {
+            return Self::Conflict;
         }
         tracing::error!("database error: {:?}", e);
         Self::InternalServerError
