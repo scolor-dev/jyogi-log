@@ -7,15 +7,40 @@ use std::{error::Error as StdError, fmt, net::AddrParseError};
 #[derive(Debug)]
 pub enum ApiError {
     InternalServerError,
+    Unauthorized,
+    Conflict,
+    BadRequest,
 }
 
 impl IntoResponse for ApiError {
     fn into_response(self) -> Response {
         let status = match self {
             Self::InternalServerError => StatusCode::INTERNAL_SERVER_ERROR,
+            Self::Unauthorized => StatusCode::UNAUTHORIZED,
+            Self::Conflict => StatusCode::CONFLICT,
+            Self::BadRequest => StatusCode::BAD_REQUEST,
         };
 
         status.into_response()
+    }
+}
+
+impl From<sqlx::Error> for ApiError {
+    fn from(e: sqlx::Error) -> Self {
+        if let sqlx::Error::Database(ref db_err) = e {
+            if db_err.code().as_deref() == Some("23505") {
+                return Self::Conflict;
+            }
+        }
+        tracing::error!("database error: {:?}", e);
+        Self::InternalServerError
+    }
+}
+
+impl From<bcrypt::BcryptError> for ApiError {
+    fn from(e: bcrypt::BcryptError) -> Self {
+        tracing::error!("bcrypt error: {:?}", e);
+        Self::InternalServerError
     }
 }
 

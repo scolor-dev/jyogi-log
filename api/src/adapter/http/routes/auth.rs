@@ -5,9 +5,11 @@ use crate::{
     state::AppState,
 };
 
+/// 認証関連ルートを返す
 pub fn routes() -> Router<AppState> {
     Router::<AppState>::new()
-        .route("/auth/me", get(auth::me))
+        .route("/auth/signup", post(auth::signup))
+        .route("/auth/login",  post(auth::login))
         .route("/auth/logout", post(auth::logout))
-        .route("/auth/refresh", post(auth::refresh))
+        .route("/auth/me",     get(auth::me))
 }
