@@ -18,11 +18,11 @@ export default function Dashboard() {
       >
         {/* アバター（名前の頭文字を丸いアイコンで表示） */}
         <div className="w-14 h-14 rounded-full bg-blue-600 flex items-center justify-center text-white text-xl font-bold shrink-0">
-          {user.displayName.charAt(0).toUpperCase()}
+          {user.display_name.charAt(0).toUpperCase()}
         </div>
         <div>
-          <p className="font-semibold text-gray-800">{user.displayName}</p>
-          <p className="text-sm text-gray-500">{user.department} / {user.grade}</p>
+          <p className="font-semibold text-gray-800">{user.display_name}</p>
+          <p className="text-sm text-gray-500">{user.identifier}</p>
         </div>
       </Link>
     </div>
