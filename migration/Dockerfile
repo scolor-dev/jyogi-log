@@ -1,4 +1,4 @@
-FROM rust:latest-slim
+FROM rust:slim
  
 RUN cargo install sqlx-cli \
     --no-default-features \
