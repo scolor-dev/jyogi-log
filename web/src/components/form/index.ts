@@ -1,6 +1,0 @@
-export { default as Button } from './Button'
-export { default as ErrorMessage } from './ErrorMessage'
-export { default as FormField } from './FormField'
-export { default as Input } from './Input'
-export { default as PasswordInput } from './PasswordInput'
-export { default as SubmitButton } from './SubmitButton'
