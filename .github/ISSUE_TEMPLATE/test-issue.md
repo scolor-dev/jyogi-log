@@ -2,7 +2,7 @@
 name: "Test Issue"
 about: テスト追加・修正用テンプレート
 title: "[test] "
-labels: [test]
+labels: [test, task]
 assignees: ""
 ---
 

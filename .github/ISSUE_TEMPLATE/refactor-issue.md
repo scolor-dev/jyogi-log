@@ -2,7 +2,7 @@
 name: "Refactor Issue"
 about: リファクタ用テンプレート
 title: "[Refactor] "
-labels: [refactor]
+labels: [refactor, task]
 assignees: ""
 ---
 

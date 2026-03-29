@@ -2,7 +2,7 @@
 name: "Fix Issue"
 about: バグ修正・不具合対応用テンプレート
 title: "[fix] "
-labels: [fix]
+labels: [fix, task]
 assignees: ""
 ---
 

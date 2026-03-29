@@ -2,7 +2,7 @@
 name: "Feature Issue"
 about: 機能追加用テンプレート
 title: "[Feature] "
-labels: [feature]
+labels: [feature, task]
 assignees: ""
 ---
 

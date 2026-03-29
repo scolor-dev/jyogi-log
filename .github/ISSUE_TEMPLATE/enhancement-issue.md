@@ -2,7 +2,7 @@
 name: "Enhancement Issue"
 about: 機能改良・拡張用テンプレート
 title: "[Enhancement] "
-labels: [enhancement]
+labels: [enhancement, task]
 assignees: ""
 ---
 
