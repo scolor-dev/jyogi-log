@@ -1,6 +1,7 @@
 -- =================================================================
--- 0006_roles.sql
+-- 0006_rbac.sql
 -- =================================================================
+
 CREATE TABLE IF NOT EXISTS roles (
     id          BIGSERIAL    PRIMARY KEY,
     name        CITEXT       NOT NULL UNIQUE,
@@ -38,3 +39,12 @@ CREATE TABLE IF NOT EXISTS user_roles (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     PRIMARY KEY (user_id, role_id)
 );
+
+-- =================================================================
+-- 初期データ
+-- =================================================================
+
+INSERT INTO roles (name, description) VALUES
+    ('admin',     '全権限'),
+    ('user',      '一般ユーザー')
+ON CONFLICT DO NOTHING;
