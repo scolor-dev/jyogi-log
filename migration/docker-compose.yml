@@ -1,6 +1,7 @@
 services:
   db:
     image: postgres:16-alpine
+    env_file: .env
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -18,7 +19,8 @@ services:
   migrate:
     build:
       context: .
-      dockerfile: migration/Dockerfile
+      dockerfile: Dockerfile
+    env_file: .env
     environment:
       DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:${POSTGRES_PORT:-5432}/${POSTGRES_DB}
     depends_on:

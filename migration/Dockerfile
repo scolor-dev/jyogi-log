@@ -5,7 +5,7 @@ RUN cargo install sqlx-cli \
     --features postgres
  
 WORKDIR /app
-COPY migration/migrations/ ./migrations/
+COPY migrations/ ./migrations/
  
 CMD ["sqlx", "migrate", "run", "--source", "./migrations"]
  
