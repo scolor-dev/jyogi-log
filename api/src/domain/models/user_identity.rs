@@ -4,7 +4,6 @@ use chrono::{DateTime, Utc};
 pub struct UserIdentity {
     pub id: i64,
     pub user_id: i64,
-    /// "username" | "email" | "oauth_google" ...
     pub identity_type: String,
     pub identifier: String,
     pub is_primary: bool,

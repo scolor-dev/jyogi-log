@@ -33,6 +33,20 @@ impl Config {
     }
 }
 
+/// JWT検証ミドルウェア用の設定。
+#[derive(Debug, Clone)]
+pub struct JwtConfig {
+    pub secret: String,
+}
+
+impl JwtConfig {
+    pub fn from_config(config: &Config) -> Self {
+        Self {
+            secret: config.jwt_secret.clone(),
+        }
+    }
+}
+
 fn require_env(key: &str) -> Result<String, ConfigError> {
     std::env::var(key).map_err(|_| ConfigError::Missing(key.to_string()))
 }

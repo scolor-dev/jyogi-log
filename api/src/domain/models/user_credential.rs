@@ -4,7 +4,6 @@ use chrono::{DateTime, Utc};
 pub struct UserCredential {
     pub id: i64,
     pub user_id: i64,
-    /// "password" | "totp" | "passkey" ...
     pub credential_type: String,
     pub secret: String,
     pub created_at: DateTime<Utc>,

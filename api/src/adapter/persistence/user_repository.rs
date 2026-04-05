@@ -39,14 +39,14 @@ pub async fn create(conn: &mut PgConnection) -> Result<User, AppError> {
     .map_err(AppError::Database)
 }
 
-pub async fn activate(pool: &PgPool, id: i64) -> Result<User, AppError> {
+pub async fn activate(conn: &mut PgConnection, id: i64) -> Result<User, AppError> {
     sqlx::query_as!(
         User,
         "UPDATE users SET status = 'active', updated_at = now() WHERE id = $1
          RETURNING id, uuid, status, created_at, updated_at, deleted_at",
         id
     )
-    .fetch_one(pool)
+    .fetch_one(conn)
     .await
     .map_err(AppError::Database)
 }

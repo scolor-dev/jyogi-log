@@ -1,20 +1,13 @@
-use std::sync::Arc;
+use axum::{routing::{get, post}, Router};
 
-use axum::{routing::{post, get}, Router};
+use crate::adapter::http::handlers::auth_handlers::{login, logout, me, refresh, signup};
+use crate::state::AppState;
 
-use crate::{
-    adapter::http::handlers::auth_handlers::{login, logout, refresh, signup},
-    service::auth_service::AuthService,
-};
-
-/// `/api/auth` 以下のルーティング。
-/// app.rs で `.nest("/api/auth", auth_routes(auth_svc))` として登録する。
-pub fn auth_routes(auth_svc: Arc<AuthService>) -> Router {
+pub fn router() -> Router<AppState> {
     Router::new()
         .route("/signup", post(signup))
         .route("/login", post(login))
         .route("/refresh", post(refresh))
         .route("/logout", post(logout))
         .route("/me", get(me))
-        .with_state(auth_svc)
 }

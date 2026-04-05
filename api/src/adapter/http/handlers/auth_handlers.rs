@@ -1,9 +1,9 @@
 use axum::{extract::State, http::StatusCode, response::IntoResponse, Json};
 use serde::{Deserialize, Serialize};
-use std::sync::Arc;
 
 use crate::adapter::http::validator::{validate_display_name, validate_password, validate_username};
-use crate::service::auth_service::AuthService;
+use crate::service::auth_service;
+use crate::state::AppState;
 
 #[derive(Deserialize)]
 pub struct SignupRequest {
@@ -18,7 +18,7 @@ pub struct ErrorResponse {
 }
 
 pub async fn signup(
-    State(auth_svc): State<Arc<AuthService>>,
+    State(state): State<AppState>,
     Json(req): Json<SignupRequest>,
 ) -> impl IntoResponse {
     if let Some(message) = validate_username(&req.username)
@@ -28,7 +28,7 @@ pub async fn signup(
         return (StatusCode::BAD_REQUEST, Json(ErrorResponse { message })).into_response();
     }
 
-    match auth_svc.signup(req.username, req.password, req.display_name).await {
+    match auth_service::signup(&state.pool, req.username, req.password, req.display_name).await {
         Ok(_) => StatusCode::CREATED.into_response(),
         Err(_) => StatusCode::INTERNAL_SERVER_ERROR.into_response(),
     }
