@@ -1,0 +1,24 @@
+[package]
+name = "api"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+anyhow = "1.0.102"
+axum = "0.8.8"
+bcrypt = "0.19.0"
+chrono = { version = "0.4.44", features = ["serde"] }
+dotenvy = "0.15.7"
+hex = "0.4.3"
+jsonwebtoken = { version = "10.3.0", features = ["rust_crypto"] }
+rand = "0.10.0"
+rustls = { version = "0.23.37", features = ["aws_lc_rs"] }
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1.0.149"
+sha2 = "0.11.0"
+sqlx = { version = "0.8.6", features = ["postgres", "runtime-tokio", "uuid", "chrono"] }
+thiserror = "2.0.18"
+tokio = { version = "1.50.0", features = ["full"] }
+tracing = "0.1.44"
+tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
+uuid = { version = "1.23.0", features = ["serde", "v4"] }
